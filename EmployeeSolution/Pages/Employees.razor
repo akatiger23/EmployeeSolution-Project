@@ -1,0 +1,23 @@
+﻿@page "/employees"
+@inject NavigationManager nav
+
+
+<h3>
+    <button @onclick="AddEmployee" type="button" class="btn btn-success " style="float:right">
+        <i class="fa-solid fa-user-plus me-2"></i>Add Employees
+        
+    </button>
+    Employees
+</h3>
+
+
+<EmployeeList>
+
+</EmployeeList>
+
+@code {
+    void AddEmployee(){
+        nav.NavigateTo("AddEmployee");
+    }
+
+}

@@ -1,0 +1,124 @@
+﻿@using EmployeeSolution.Shared.Modell
+@inject HttpClient http
+@using System.Text.Json;
+@using System.Net.Http.Json
+@using EmployeeSolution.Shared
+@inject NavigationManager nav
+@inject AppService App
+
+
+
+@if(employees !=null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Actions</th>
+                <th> Employee ID</th>
+                <th> First Name</th>
+                <th> Last Name</th>
+                <th> Eamil</th>
+                
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in employees)
+           {
+            <tr>
+                <td>
+                        <button @onclick="()=>EditEmployee(employee)" type="button" class="btn btn-primary ">
+                            <i class="fas fa-user-pen me-2"></i>Edit
+                        </button>
+                        <button @onclick="()=>DeactivateEmployee(employee)" type="button" class="btn btn-primary ">
+                            <i class="fas fa-user-minus me-2"></i>Delete
+                        </button>
+
+                </td>
+                <td>@employee.EmpID</td>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.Email</td>
+                
+            </tr>
+           }
+        </tbody>
+        
+    </table>
+
+
+}
+else{
+    <span>
+        Loading Employees.......
+        
+    </span>
+}
+
+<MsgBox @ref="msgbox" MsgBoxButtons="MSGBOX_BUTTONS.YesNo" Closed="msgbox_Closed">
+    <Title>Deactive Employee</Title>
+     <Body>
+        @if (App.Employee != null) 
+        {
+            <text>Are you Sure you want to deactivate @App.Employee.FirstName @App.Employee.LastName ?</text>
+        }
+     </Body>
+</MsgBox>
+
+
+@code {
+    public List<Employee> employees { get; set; }
+    MsgBox? msgbox;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var resp = await http.GetAsync("https://localhost:7064/getemployees");
+        if (resp.IsSuccessStatusCode){
+
+            employees = await resp.Content.ReadFromJsonAsync<List<Employee>>();
+
+        }
+
+
+
+    }
+
+    void EditEmployee(Employee emp)
+    {
+        App.Employee = emp;
+        nav.NavigateTo("EditEmployee");
+
+    }
+
+
+    public void DeactivateEmployee(Employee emp)
+    {
+        App.Employee = emp;
+        //nav.NavigateTo("DeleteEmployee");
+        msgbox.Show();
+
+    }
+    public  async void msgbox_Closed(bool isYesClicked)
+    {
+        if (isYesClicked)
+        {
+            Console.WriteLine("Yes was clicked");
+            var resp = await App.SaveEmployee(App.Employee);
+            if(resp.Returncod ==1)
+            {
+                Console.WriteLine($"{App.Employee.FirstName} {App.Employee.LastName} deactivated succesfully.");
+            }
+            else
+            {
+                Console.WriteLine($"{App.Employee.FirstName} {App.Employee.LastName} Not deactivated succesfully.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("No was clicked");
+            
+        }
+
+    }
+
+}

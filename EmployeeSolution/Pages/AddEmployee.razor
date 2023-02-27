@@ -1,0 +1,84 @@
+﻿@page "/AddEmployee"
+@inject AppService App
+
+
+<h3>Add Employee</h3>
+
+@if (newEmployee == null)
+{
+    
+    <div>Loading.........</div>
+}
+else
+{
+    
+    <div style="max-width:880px">
+        <div class="row mb-2">
+
+            <div class="row">
+                <label>First Name</label>
+                <input type="text" placeholder="First Name.." @bind-value=newEmployee.FirstName class="from-control from-control-sm" />
+            </div>
+            <div class="row">
+                <label>Last Name</label>
+                <input type="text" placeholder="Last Name.." @bind-value=newEmployee.LastName class="from-control from-control-sm" />
+            </div>
+            <div class="row">
+                <label>Age</label>
+                <input type="text" placeholder="Age.." @bind-value=newEmployee.Age class="from-control from-control-sm" />
+            </div>
+            <div class="row">
+                <label>Email</label>
+                <input type="text" placeholder="Email..." @bind-value=newEmployee.Email class="from-control from-control-sm" />
+            </div>
+            <div class="row col-6">
+                <label>Phone</label>
+                <input type="text" palceholder="Phone...." @bind-value=newEmployee.Phone class="from-control from-control-sm" />
+            </div>
+            
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <button @onclick="CreatEmployee" type="button" class="btn btn-success btn-sm">
+                    <i class="fa-solid fa-floppy-disk me-2"></i>Creat Employee
+                </button>
+            </div>
+        </div>
+    </div>
+}
+<div class="modal @(showModal?"Show":"")" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">AddEmployee</h5>
+                <button @onclick="() =>{showModal=false;}" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>@resp.ReturnMessage</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="() =>{showModal=false;}">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    bool showModal = false;
+    Employee newEmployee = new Employee();
+    SaveEmployeeRespons resp = new SaveEmployeeRespons();
+
+    async Task CreatEmployee()
+    {
+        resp = await App.SaveEmployee(newEmployee);
+        if (resp.Returncod == 1)
+        {
+            showModal = true;
+            StateHasChanged();
+
+        }
+    }
+
+}

@@ -1,0 +1,87 @@
+﻿@page "/EditEmployee"
+@inject AppService App
+
+
+
+
+@if (App.Employee == null)
+{
+    <h3>Edit Employee....</h3>
+    <div>Loading.........</div>
+}
+else
+{
+    <h3>Edit Employee: @App.Employee.EmpID</h3>
+    <div style ="max-width:880px"> 
+        <div class="row mb-2">
+            
+            <div class="row">
+                <label>First Name</label>
+                <input type="text" placeholder="First Name.." @bind-value=App.Employee.FirstName class="from-control from-control-sm"/>
+            </div>
+            <div class="row">
+                <label>Last Name</label>
+                <input type="text" placeholder="Last Name.." @bind-value=App.Employee.LastName class="from-control from-control-sm" />
+            </div>
+            <div class="row">
+                <label>Age</label>
+                <input type="text" placeholder="Age.." @bind-value=App.Employee.Age class="from-control from-control-sm" />
+            </div>
+            <div class="row">
+                <label>Email</label>
+                <input type="text" placeholder="Email..." @bind-value=App.Employee.Email class="from-control from-control-sm" />
+            </div>
+            <div class="row">
+                <label>Phone</label>
+                <input type="text" palceholder="Phone...." @bind-value=App.Employee.Phone class="from-control from-control-sm" />
+            </div>
+            <div class="row">
+                <label>Creat Date</label>
+                <input type="text" readonly placeholder="Creat Date" @bind-value=App.Employee.CreatDate class="from-control from-control-sm" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <button @onclick="SaveEmployee" type="button" class="btn btn-success btn-sm">
+                    <i class="fa-solid fa-floppy-disk me-2"></i>Save Employee
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="modal @(showModal?"Show":"")" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Save Employee</h5>
+                <button @onclick="() =>{showModal=false;}" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>@App.Employee.FirstName @App.Employee.LastName save sucussfully</p>
+            </div>
+            <div class="modal-footer">
+                <button @onclick="() =>{showModal=false;}" type="button" class="btn btn-secondary save sucussfully" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    bool showModal = false;
+
+    async Task SaveEmployee()
+    {
+        
+        var resp = await App.SaveEmployee(App.Employee);
+        if(resp.Returncod==1)
+        {
+            showModal = true;
+            StateHasChanged();
+
+        }
+    }
+
+}

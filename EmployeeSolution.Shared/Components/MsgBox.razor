@@ -1,0 +1,95 @@
+﻿@using EmployeeSolution.Shared.Modell
+@inject HttpClient http
+@using System.Text.Json;
+@using System.Net.Http.Json
+@using EmployeeSolution.Shared
+@inject NavigationManager nav
+
+
+<div class="modal @(showModal?"show":"")" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @Body
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary ms-auto" data-bs-dismiss="modal" @onclick="Ok">@OkButtonText</button>
+                @if(CloseButtonText !="")
+                {
+                    <button type="button" class="btn btn-danger me-auto" data-bs-dismiss="modal" @onclick="Close">@CloseButtonText</button>
+                }
+               
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter] public RenderFragment Title{ get; set; }
+    [Parameter] public RenderFragment Body { get; set; }
+    [Parameter] public EventCallback<bool> Closed { get; set; }
+    [Parameter] public MSGBOX_BUTTONS MsgBoxButtons { get; set; }
+
+    bool showModal = false;
+    string OkButtonText, CloseButtonText;
+    bool IsYesClicked = false;
+
+    protected override void OnParametersSet()
+    {
+        switch(MsgBoxButtons)
+        {
+            case MSGBOX_BUTTONS.OK:
+                {
+                    OkButtonText = "Ok";
+                    CloseButtonText = "";
+                    break;
+                }
+            case MSGBOX_BUTTONS.YesNo:
+                {
+                    OkButtonText = "Yes";
+                    CloseButtonText = "No";
+                    break;
+                }
+            case MSGBOX_BUTTONS.OkCansel:
+                {
+                    OkButtonText = "Ok";
+                    CloseButtonText = "Cancel";
+                    break;
+                }
+            default:{
+                    OkButtonText = "Ok";
+                    CloseButtonText = "Cancel";
+                    break;
+                   
+                }
+        }
+    }
+
+
+
+    public void Ok(){
+        IsYesClicked = true;
+        Hide();
+        if (Closed.HasDelegate) Closed.InvokeAsync(IsYesClicked);
+    }
+    public void Close(){
+        IsYesClicked = false;
+        Hide();
+        if (Closed.HasDelegate) Closed.InvokeAsync(IsYesClicked);
+    }
+
+    public void Show(){
+        showModal = true;
+
+    }
+    public void Hide(){
+        showModal = false;
+
+    }
+    
+}
